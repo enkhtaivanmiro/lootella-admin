@@ -7,7 +7,7 @@ import { ErrorType } from '@/schema';
 
 export type ParamsType = Record<string, any>;
 
-export interface UseQueryProps {
+export interface UseReactQueryProps {
   uri: string;
   enabled?: boolean;
   queryKey?: string[];
@@ -21,7 +21,7 @@ export interface UseQueryProps {
   refetchOnReconnect?: boolean;
 }
 
-export interface UseQueryValue<T> {
+export interface UseReactQueryValue<T> {
   loading: boolean;
   data: T;
   hasCachedData: boolean;
@@ -45,7 +45,7 @@ export const useReactQuery = <T>({
   refetchOnMount = false,
   refetchOnWindowFocus = false,
   refetchOnReconnect = true,
-}: UseQueryProps): UseQueryValue<T> => {
+}: UseReactQueryProps): UseReactQueryValue<T> => {
   const [url, setUrl] = useState(uri || '');
   const [fetching, setFetching] = useState<boolean>(false);
   // Access the QueryClient instance

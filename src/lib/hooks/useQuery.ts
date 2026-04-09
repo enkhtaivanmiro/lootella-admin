@@ -4,13 +4,13 @@ import { useCallback, useEffect, useState } from 'react';
 import axios from '@/lib/axios';
 import { ErrorType } from '@/schema';
 
-export interface UseQueryProps {
+export interface UseAxiosQueryProps {
   uri: string;
   enabled?: boolean;
   params?: Record<string, any>;
 }
 
-export interface UseQueryValue<T> {
+export interface UseAxiosQueryValue<T> {
   data: T;
   error?: ErrorType;
   loading: boolean;
@@ -22,7 +22,7 @@ export const useQuery = <T>({
   uri,
   enabled,
   params = {},
-}: UseQueryProps): UseQueryValue<T> => {
+}: UseAxiosQueryProps): UseAxiosQueryValue<T> => {
   const [loading, setLoading] = useState<boolean>(false);
   const [response, setResponse] = useState<T | null>(null);
   const [error, setError] = useState();

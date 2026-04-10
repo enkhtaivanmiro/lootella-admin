@@ -1,21 +1,10 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import {
-  ChevronLeft,
-  Settings,
-  Percent,
-  Search,
-  Box,
-  Loader2,
-  Trophy,
-  TrendingUp,
-  DollarSign,
-  Package,
-} from 'lucide-react';
+import { Settings, Percent, Search, Box, Loader2 } from 'lucide-react';
 import { Breadcrumb } from '@/components/layout/Breadcrumb';
 import { useQuery } from '@/lib/hooks';
-import { CaseDetailResponseType, CaseContainerType } from '@/schema';
+import { CaseDetailResponseType, CaseItemType } from '@/schema';
 import { useState, useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
@@ -57,14 +46,44 @@ export default function CaseDetailPage() {
   const containers = data?.containers || [];
   const currentContainer = containers[activeTab];
 
-  const filteredItems = useMemo(() => {
+  const groupedItems = useMemo(() => {
     if (!currentContainer) return [];
-    return currentContainer.items.filter(
-      (item) =>
-        item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.rarity.toLowerCase().includes(searchQuery.toLowerCase()),
-    );
-  }, [currentContainer, searchQuery]);
+
+    const groups: Record<string, CaseItemType[]> = {};
+    currentContainer.items.forEach((item) => {
+      if (!groups[item.name]) {
+        groups[item.name] = [];
+      }
+      groups[item.name].push(item);
+    });
+
+    return Object.entries(groups).map(([name, variants]) => {
+      const sortedVariants = [...variants].sort((a, b) => b.value - a.value);
+      return {
+        ...sortedVariants[0],
+        variants: sortedVariants,
+        minPrice: Math.min(...variants.map((v) => v.value)),
+        maxPrice: Math.max(...variants.map((v) => v.value)),
+        totalTickets: variants.reduce((acc, v) => acc + v.tickets, 0),
+      };
+    });
+  }, [currentContainer]);
+
+  const filteredItems = useMemo(() => {
+    return groupedItems.filter((group) => {
+      const query = searchQuery.toLowerCase();
+      if (group.name.toLowerCase().includes(query)) return true;
+      if (group.rarity.toLowerCase().includes(query)) return true;
+      return group.variants.some((v: { hashName: string }) =>
+        v.hashName.toLowerCase().includes(query),
+      );
+    });
+  }, [groupedItems, searchQuery]);
+
+  const getWearLabel = (hashName: string) => {
+    const match = hashName.match(/\(([^)]+)\)$/);
+    return match ? match[1] : 'Default';
+  };
 
   if (loading) {
     return (
@@ -149,21 +168,26 @@ export default function CaseDetailPage() {
               <h1 className="text-4xl font-black text-[#EAEAEA] mb-4 tracking-tight leading-none">
                 {currentContainer.name}
               </h1>
-              <div className="flex bg-[#1a1a1a] p-1.5 rounded-[16px] border border-[#242424] w-[100%] md:w-auto">
+              <div className="flex border-b border-[#242424] w-full md:w-auto overflow-x-auto no-scrollbar">
                 {containers.map((container, idx) => (
                   <button
                     key={container.id}
                     onClick={() => setActiveTab(idx)}
                     className={cn(
-                      'px-6 py-2.5 rounded-[12px] text-sm font-bold transition-all',
+                      'px-8 py-4 text-sm font-bold transition-all relative min-w-max',
                       activeTab === idx
-                        ? 'bg-[#242424] text-[#EAEAEA] shadow-sm'
+                        ? 'text-[#EAEAEA]'
                         : 'text-[#8c8c8c] hover:text-[#EAEAEA]',
                     )}
                   >
                     {container.name.includes('Boosted')
                       ? 'Boosted Mode'
-                      : 'Regular Mode'}
+                      : container.name.includes('Jester')
+                        ? 'Jester Mode'
+                        : 'Regular Mode'}
+                    {activeTab === idx && (
+                      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-emerald-500 rounded-full shadow-[0_0_8px_rgba(255,255,255,0.3)]" />
+                    )}
                   </button>
                 ))}
               </div>
@@ -217,14 +241,14 @@ export default function CaseDetailPage() {
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-5">
-          {filteredItems.map((item) => {
-            const rarityColor = RARITY_COLORS[item.rarity] || '#ffffff';
+          {filteredItems.map((group: any) => {
+            const rarityColor = RARITY_COLORS[group.rarity] || '#ffffff';
             const rarityBg =
-              RARITY_BG[item.rarity] || 'rgba(255, 255, 255, 0.05)';
+              RARITY_BG[group.rarity] || 'rgba(255, 255, 255, 0.05)';
 
             return (
               <div
-                key={item.id}
+                key={group.id}
                 className="group bg-[#1a1a1a] border border-[#242424] rounded-[24px] p-5 hover:border-[#3E3E3E] hover:-translate-y-1 transition-all flex flex-col items-center text-center relative overflow-hidden"
               >
                 <div
@@ -237,8 +261,8 @@ export default function CaseDetailPage() {
                   style={{ backgroundColor: rarityBg }}
                 >
                   <img
-                    src={item.image}
-                    alt={item.name}
+                    src={group.image}
+                    alt={group.name}
                     className="h-full w-full object-contain drop-shadow-2xl"
                   />
                 </div>
@@ -248,36 +272,57 @@ export default function CaseDetailPage() {
                     className="text-[10px] font-black uppercase tracking-[0.15em] mb-1.5"
                     style={{ color: rarityColor }}
                   >
-                    {item.rarity}
+                    {group.rarity}
                   </p>
                   <h4 className="text-sm font-bold text-[#EAEAEA] line-clamp-2 mb-3 h-10 leading-snug">
-                    {item.name}
+                    {group.name}
                   </h4>
 
                   <div className="pt-3 border-t border-[#242424] flex items-center justify-between">
                     <div>
                       <p className="text-[9px] font-bold text-[#8c8c8c] uppercase tracking-wider mb-0.5 text-left">
-                        Value
+                        {group.variants.length > 1 ? 'Price Range' : 'Value'}
                       </p>
                       <p className="text-xs font-black text-[#EAEAEA] text-left">
-                        ${item.value.toFixed(2)}
+                        {group.minPrice === group.maxPrice
+                          ? `$${group.minPrice.toFixed(2)}`
+                          : `$${group.minPrice.toFixed(2)} - $${group.maxPrice.toFixed(2)}`}
                       </p>
                     </div>
                     <div>
                       <p className="text-[9px] font-bold text-[#8c8c8c] uppercase tracking-wider mb-0.5 text-right">
-                        Odds
+                        {group.variants.length > 1 ? 'Total Odds' : 'Odds'}
                       </p>
                       <p className="text-xs font-black text-[#EAEAEA] text-right">
-                        {((item.tickets / 100000) * 100).toFixed(2)}%
+                        {((group.totalTickets / 100000) * 100).toFixed(2)}%
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <div className="absolute inset-0 bg-black/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button className="px-4 py-2 bg-[#EAEAEA] text-[#141414] text-xs font-black rounded-xl hover:scale-105 transition-transform">
-                    PREVIEW ITEM
-                  </button>
+                <div className="absolute inset-0 bg-black/95 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity p-5">
+                  <div className="w-full flex-1 flex flex-col gap-2 overflow-y-auto no-scrollbar scroll-smooth">
+                    {group.variants.map((variant: any) => (
+                      <button
+                        key={variant.id}
+                        className="w-full px-4 py-2.5 bg-[#242424]/50 hover:bg-[#EAEAEA] rounded-[14px] text-left flex items-center justify-between group/variant transition-all hover:scale-[1.02] border border-transparent hover:border-white/10"
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-[11px] font-bold text-[#EAEAEA] group-hover/variant:text-[#141414] transition-colors">
+                            {getWearLabel(variant.hashName)}
+                          </span>
+                        </div>
+                        <div className="flex flex-col items-end">
+                          <span className="text-[10px] font-black text-emerald-500 group-hover/variant:text-[#141414] transition-colors">
+                            ${variant.value.toFixed(2)}
+                          </span>
+                          <span className="text-[8px] font-bold text-[#8c8c8c] group-hover/variant:text-[#242424]/60 transition-colors">
+                            {((variant.tickets / 100000) * 100).toFixed(2)}%
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
             );

@@ -24,7 +24,7 @@ export interface UserType {
   referred_by_code: string | null;
   level_price: number;
   level: number;
-  role: 'user' | 'admin' | 'creator';
+  role: Role;
 }
 export interface CaseType {
   id: string;
@@ -81,4 +81,72 @@ export interface CaseDetailResponseType {
 
 export interface CasesAllResponseType {
   [category: string]: CaseType[];
+}
+
+export interface WonItemType {
+  id: string;
+  createdAt: string;
+  skinId: string;
+  isLocked: boolean;
+  rollId: string;
+  sourceId: string;
+  userId: string;
+  status: string;
+  sourceType: string;
+  skin: {
+    id: string;
+    name: string;
+    marketHashName: string;
+    image: string;
+    price: number;
+    rarity: string;
+  };
+}
+
+export interface PaymentType {
+  id: string;
+  createdAt: string;
+  userId: string;
+  method: PaymentMethod;
+  status: PaymentStatus;
+  paid_at: string | null;
+  user?: {
+    display_name: string;
+  };
+}
+
+export enum CaseCategory {
+  REGULAR = 'regular',
+  STICKER = 'sticker',
+  DEDICATED = 'dedicated',
+  COUNTER_STRIKE = 'counter-strike',
+  FIFTY_FIFTY = 'fifty-fifty',
+  SOCIAL = 'social',
+  PLAYER = 'player',
+}
+
+export enum Currency {
+  MNT = 'mnt',
+  USD = 'usd',
+  REFFERAL = 'refferal',
+  AMMO = 'ammo',
+}
+
+export enum Role {
+  ADMIN = 'admin',
+  CREATOR = 'creator',
+  USER = 'user',
+}
+
+export enum PaymentStatus {
+  PENDING = 'pending',
+  SUCCESS = 'success',
+  EXPIRED = 'expired',
+  REJECTED = 'rejected',
+}
+
+export enum PaymentMethod {
+  QPAY = 'qpay',
+  ITEM = 'item',
+  SOCIALPAY = 'socialpay',
 }

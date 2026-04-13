@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 import axios from '@/lib/axios';
@@ -53,20 +53,24 @@ export const useListQuery = <T>({
   const [totalPages, setTotalPages] = useState(0);
   const [error, setError] = useState<ErrorType>();
 
-  const hasNextPage = current < totalPages;
+  const appliedParams = useRef<Record<string, any>>(params);
 
-  useEffect(() => {
-    if (enabled) {
-      fetchData(params);
-    }
-  }, [searchParams, enabled]);
+  const hasNextPage = current < totalPages;
 
   const makeRequest = async (queryParams?: Record<string, any>) => {
     try {
       setLoading(true);
+      const finalParams = {
+        ...params,
+        ...appliedParams.current,
+        ...queryParams,
+      };
       const res = await axios.get(uri, {
-        params: queryParams ?? params,
+        params: finalParams,
       });
+
+      appliedParams.current = finalParams;
+
       return res as any as PaginatedListType<T>;
     } catch (e) {
       setError(e as ErrorType);
@@ -76,23 +80,25 @@ export const useListQuery = <T>({
     }
   };
 
-  const fetchData = useCallback(async (queryParams?: Record<string, any>) => {
-    const res = await makeRequest(queryParams);
+  const fetchData = useCallback(
+    async (queryParams?: Record<string, any>) => {
+      const res = await makeRequest(queryParams);
 
-    setData(res.data);
-    setCurrent(res.page);
-    setTotal(res.total);
-    setTotalPages(res.totalPages);
+      setData(res.data);
+      setCurrent(res.page);
+      setTotal(res.total);
+      setTotalPages(res.totalPages);
 
-    return res;
-  }, []);
+      return res;
+    },
+    [uri],
+  );
 
   const fetchMore = useCallback(
     async (queryParams?: Record<string, any>) => {
       if (!hasNextPage) return;
 
       const nextParams = {
-        ...params,
         page: current + 1,
         ...(queryParams || {}),
       };
@@ -106,8 +112,15 @@ export const useListQuery = <T>({
 
       return res;
     },
-    [current, hasNextPage],
+    [current, hasNextPage, uri],
   );
+
+  useEffect(() => {
+    if (enabled) {
+      appliedParams.current = params;
+      fetchData(params);
+    }
+  }, [searchParams, enabled, uri, JSON.stringify(params)]);
 
   return {
     data,

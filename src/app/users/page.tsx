@@ -22,7 +22,6 @@ export default function UsersPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const page = Number(searchParams.get('page')) || 1;
-  const q = searchParams.get('q') || '';
 
   const {
     data: users,
@@ -34,7 +33,7 @@ export default function UsersPage() {
     fetchData,
   } = useListQuery<UserType>({
     uri: '/v1/users',
-    params: { page, limit: 12, q },
+    params: { page, limit: 12 },
   });
 
   const handlePageChange = (newPage: number) => {
@@ -77,8 +76,6 @@ export default function UsersPage() {
               type="text"
               placeholder="Search users by name or email..."
               className="w-full h-11 bg-[#1a1a1a] border border-[#242424] rounded-[12px] pl-10 pr-4 text-sm text-[#EAEAEA] focus:outline-none focus:border-[#3E3E3E] transition-colors"
-              value={q}
-              onChange={(e) => handleSearch(e.target.value)}
             />
           </div>
           <button className="flex items-center gap-2 h-11 px-4 bg-[#1a1a1a] border border-[#242424] rounded-[12px] text-sm font-semibold text-[#8c8c8c] hover:text-[#EAEAEA] transition-colors">
@@ -143,12 +140,15 @@ export default function UsersPage() {
                               {user.display_name.charAt(0)}
                             </div>
                           )}
-                          <div>
+                          <div
+                            onClick={() => router.push(`/users/${user.id}`)}
+                            style={{ cursor: 'pointer' }}
+                          >
                             <p className="text-sm font-bold text-[#EAEAEA]">
                               {user.display_name}
                             </p>
                             <p className="text-xs text-[#8c8c8c]">
-                              ID: {user.account_id}
+                              ID: {user.id}
                             </p>
                           </div>
                         </div>

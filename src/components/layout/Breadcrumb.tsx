@@ -22,8 +22,8 @@ export function Breadcrumb({ items }: BreadcrumbProps) {
   const logout = useSetAtom(logoutAtom);
 
   return (
-    <div className="fixed top-0 right-0 left-[268px] z-[200]">
-      <div className="flex h-[70px] items-center justify-between border-b border-[#242424] bg-[#141414] px-8 py-[14px]">
+    <div className="fixed top-0 right-0 left-[268px] z-[200] pointer-events-none">
+      <div className="flex h-[70px] items-center justify-between border-b border-[#242424] bg-[#141414] px-8 py-[14px] pointer-events-auto">
         <nav className="flex items-center gap-1.5 font-semibold text-sm">
           {items.map((item, index) => (
             <React.Fragment key={item.label}>

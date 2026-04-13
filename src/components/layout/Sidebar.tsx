@@ -1,30 +1,30 @@
-"use client";
+'use client';
 
-import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  Box, 
-  Users, 
-  CreditCard, 
+import React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import {
+  LayoutDashboard,
+  Box,
+  Users,
+  CreditCard,
   LogOut,
   TrendingUp,
   ShieldCheck,
-  LifeBuoy
-} from "lucide-react";
-import { useSetAtom } from "jotai";
-import { logoutAtom } from "@/atoms/auth";
-import { cn } from "@/lib/utils";
-import { ScrollArea } from "@/components/ui/scroll-area";
+  LifeBuoy,
+} from 'lucide-react';
+import { useSetAtom } from 'jotai';
+import { logoutAtom } from '@/atoms/auth';
+import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const menuItems = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/" },
-  { icon: Box, label: "Cases", href: "/cases" },
-  { icon: Users, label: "Users", href: "/users" },
-  { icon: CreditCard, label: "Transactions", href: "/transactions" },
-  { icon: TrendingUp, label: "Analytics", href: "/analytics" },
-  { icon: ShieldCheck, label: "Security", href: "/security" },
+  { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
+  { icon: Box, label: 'Cases', href: '/cases' },
+  { icon: Users, label: 'Users', href: '/users' },
+  { icon: CreditCard, label: 'Transactions', href: '/transactions' },
+  { icon: TrendingUp, label: 'Analytics', href: '/analytics' },
+  { icon: ShieldCheck, label: 'Security', href: '/security' },
 ];
 
 export function Sidebar() {
@@ -50,16 +50,21 @@ export function Sidebar() {
       <ScrollArea className="flex-1">
         <nav className="flex flex-col gap-1 p-4">
           {menuItems.map((item) => {
-            const isActive = pathname === item.href || (item.href !== "/" && pathname.startsWith(item.href));
+            const isActive =
+              pathname === item.href ||
+              (item.href !== '/' && pathname.startsWith(item.href));
             return (
               <Link key={item.href} href={item.href} className="group">
-                <div className={cn(
-                  "flex items-center gap-[10px] rounded-[12px] px-3 py-[10px] text-sm font-semibold transition-all duration-200 ease-in-out border border-transparent",
-                  isActive || "group-hover:opacity-100 group-hover:bg-[#292929] group-hover:border-[#3E3E3E]",
-                  isActive 
-                    ? "opacity-100 bg-[#292929] border-[#3E3E3E] text-[#EAEAEA]" 
-                    : "opacity-50 text-[#EAEAEA]"
-                )}>
+                <div
+                  className={cn(
+                    'flex items-center gap-[10px] rounded-[12px] px-3 py-[10px] text-sm font-semibold transition-all duration-200 ease-in-out border border-transparent',
+                    isActive ||
+                      'group-hover:opacity-100 group-hover:bg-[#292929] group-hover:border-[#3E3E3E]',
+                    isActive
+                      ? 'opacity-100 bg-[#292929] border-[#3E3E3E] text-[#EAEAEA]'
+                      : 'opacity-50 text-[#EAEAEA]',
+                  )}
+                >
                   <item.icon className="h-5 w-5 shrink-0" strokeWidth={2.5} />
                   <span>{item.label}</span>
                 </div>
@@ -76,12 +81,12 @@ export function Sidebar() {
             <span>Support</span>
           </div>
         </Link>
-        <button onClick={() => logout()} className="group w-full text-left">
+        {/* <button onClick={() => logout()} className="group w-full text-left">
           <div className="flex items-center gap-[10px] rounded-[12px] px-3 py-[10px] text-sm font-semibold text-[#E4626F] opacity-50 transition-all hover:opacity-100 hover:bg-[#292929] hover:border-[#332121] border border-transparent">
             <LogOut className="h-5 w-5 shrink-0" strokeWidth={2.5} />
             <span>Logout</span>
           </div>
-        </button>
+        </button> */}
       </div>
     </aside>
   );

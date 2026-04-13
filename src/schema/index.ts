@@ -150,3 +150,57 @@ export enum PaymentMethod {
   ITEM = 'item',
   SOCIALPAY = 'socialpay',
 }
+
+export enum SkinExterior {
+  FACTORY_NEW = 'Factory New',
+  MINIMAL_WEAR = 'Minimal Wear',
+  FIELD_TESTED = 'Field-Tested',
+  WELL_WORN = 'Well-Worn',
+  BATTLE_SCARRED = 'Battle-Scarred',
+}
+
+export enum SkinRarity {
+  CONSUMER_GRADE = 'Consumer Grade',
+  INDUSTRIAL_GRADE = 'Industrial Grade',
+  MIL_SPEC_GRADE = 'Mil-Spec Grade',
+  RESTRICTED = 'Restricted',
+  CLASSIFIED = 'Classified',
+  COVERT = 'Covert',
+  CONTRABAND = 'Contraband',
+  EXTRAORDINARY = 'Extraordinary',
+  HIGH_GRADE = 'High Grade',
+  REMARKABLE = 'Remarkable',
+  EXOTIC = 'Exotic',
+}
+
+export enum SkinType {
+  PISTOL = 'Pistol',
+  RIFLE = 'Rifle',
+  SNIPER_RIFLE = 'Sniper Rifle',
+  SMG = 'SMG',
+  SHOTGUN = 'Shotgun',
+  MACHINEGUN = 'Machinegun',
+  KNIFE = 'Knife',
+  GLOVES = 'Gloves',
+  STICKER = 'Sticker',
+  AGENT = 'Agent',
+  CONTAINER = 'Container',
+  MUSIC_KIT = 'Music Kit',
+  COLLECTIBLE = 'Collectible',
+  PASS = 'Pass',
+  TOOL = 'Tool',
+}
+
+export interface SkinItemType {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  name: string;
+  marketHashName: string;
+  image: string;
+  type: string;
+  exterior: string;
+  price: number;
+  rarity: string;
+  isStatTrak: boolean;
+}

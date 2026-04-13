@@ -12,14 +12,17 @@ import {
   ChevronDown,
   Loader2,
   Package,
+  Layers,
 } from 'lucide-react';
 import { Breadcrumb } from '@/components/layout/Breadcrumb';
 import { cn } from '@/lib/utils';
 import { useListQuery } from '@/lib/hooks';
 import { CaseType, CaseCategory } from '@/schema';
 import { useState, useMemo, Fragment } from 'react';
-import Link from 'next/link';
 import { CreateCaseDialog } from '@/components/CreateCaseDialog';
+import { EditCaseDialog } from '@/components/EditCaseDialog';
+import { EditSkinsDialog } from '@/components/EditSkinsDialog';
+import Link from 'next/link';
 
 export default function CasesPage() {
   const [q, setQ] = useState('');
@@ -283,9 +286,24 @@ export default function CasesPage() {
                                   <Eye className="h-4 w-4" />
                                 </button>
                               </Link>
-                              <button className="p-2 hover:bg-[#292929] rounded-lg text-[#8c8c8c] hover:text-[#EAEAEA]">
-                                <Edit className="h-4 w-4" />
-                              </button>
+                              <EditCaseDialog
+                                caseData={master}
+                                onSuccess={fetchData}
+                                trigger={
+                                  <button className="p-2 hover:bg-[#292929] rounded-lg text-[#8c8c8c] hover:text-[#EAEAEA]">
+                                    <Edit className="h-4 w-4" />
+                                  </button>
+                                }
+                              />
+                              <EditSkinsDialog
+                                caseData={master}
+                                onSuccess={fetchData}
+                                trigger={
+                                  <button className="p-2 hover:bg-[#292929] rounded-lg text-[#8c8c8c] hover:text-[#EAEAEA]">
+                                    <Layers className="h-4 w-4" />
+                                  </button>
+                                }
+                              />
                               <button className="p-2 hover:bg-[#292929] rounded-lg text-[#8c8c8c] hover:text-[#EAEAEA]">
                                 <Copy className="h-4 w-4" />
                               </button>

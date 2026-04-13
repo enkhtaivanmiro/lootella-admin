@@ -57,14 +57,19 @@ export const useListQuery = <T>({
 
   const hasNextPage = current < totalPages;
 
-  const makeRequest = async (queryParams?: Record<string, any>) => {
+  const makeRequest = async (
+    queryParams?: Record<string, any>,
+    options: { override?: boolean } = {},
+  ) => {
     try {
       setLoading(true);
-      const finalParams = {
-        ...params,
-        ...appliedParams.current,
-        ...queryParams,
-      };
+      const finalParams = options.override
+        ? { ...params, ...queryParams }
+        : {
+            ...params,
+            ...appliedParams.current,
+            ...queryParams,
+          };
       const res = await axios.get(uri, {
         params: finalParams,
       });
@@ -82,7 +87,7 @@ export const useListQuery = <T>({
 
   const fetchData = useCallback(
     async (queryParams?: Record<string, any>) => {
-      const res = await makeRequest(queryParams);
+      const res = await makeRequest(queryParams, { override: true });
 
       setData(res.data);
       setCurrent(res.page);
@@ -91,7 +96,7 @@ export const useListQuery = <T>({
 
       return res;
     },
-    [uri],
+    [uri, params],
   );
 
   const fetchMore = useCallback(
@@ -103,7 +108,7 @@ export const useListQuery = <T>({
         ...(queryParams || {}),
       };
 
-      const res = await makeRequest(nextParams);
+      const res = await makeRequest(nextParams, { override: false });
 
       setData((prev) => [...prev, ...res.data]);
       setCurrent(res.page);
@@ -112,7 +117,7 @@ export const useListQuery = <T>({
 
       return res;
     },
-    [current, hasNextPage, uri],
+    [current, hasNextPage, uri, params],
   );
 
   useEffect(() => {

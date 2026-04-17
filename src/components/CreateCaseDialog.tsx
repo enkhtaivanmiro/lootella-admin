@@ -16,7 +16,7 @@ import { Plus, Box, Loader2, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 
-import { CaseCategory, Currency } from '@/schema';
+import { CaseCategory, Currency, CaseMode } from '@/schema';
 
 interface CreateCaseDialogProps {
   onSuccess?: () => void;
@@ -30,10 +30,10 @@ export function CreateCaseDialog({
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    slug: '',
     isActive: true,
     image: '',
     category: CaseCategory.REGULAR,
+    defaultMode: CaseMode.DAILY,
     price: { amount: 0, currency: Currency.USD },
     isBoost: false,
     boostPrice: { amount: 0, currency: Currency.USD },
@@ -104,24 +104,6 @@ export function CreateCaseDialog({
                 className="w-full h-11 bg-[#141414] border border-[#242424] rounded-[12px] px-4 text-sm text-[#EAEAEA] focus:outline-none focus:border-[#3E3E3E] transition-colors"
               />
             </div>
-            <div className="col-span-2 space-y-2">
-              <label className="text-[14px] font-semibold text-[#8c8c8c]">
-                Case slug <span className="text-[#E96262] ml-0.5">*</span>
-              </label>
-              <input
-                required
-                type="text"
-                value={formData.slug}
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    slug: e.target.value.replace(/\s+/g, '-'),
-                  })
-                }
-                placeholder="Enter case slug"
-                className="w-full h-11 bg-[#141414] border border-[#242424] rounded-[12px] px-4 text-sm text-[#EAEAEA] focus:outline-none focus:border-[#3E3E3E] transition-colors"
-              />
-            </div>
             {/* Category */}
             <div className="space-y-2">
               <label className="text-[14px] font-semibold text-[#8c8c8c]">
@@ -163,7 +145,6 @@ export function CreateCaseDialog({
               />
             </div>
 
-            {/* Image URL */}
             <div className="col-span-2 space-y-2">
               <label className="text-[14px] font-semibold text-[#8c8c8c]">
                 Image URL <span className="text-[#E96262] ml-0.5">*</span>
@@ -190,6 +171,30 @@ export function CreateCaseDialog({
                     <Box className="h-5 w-5 text-[#242424]" />
                   )}
                 </div>
+              </div>
+            </div>
+            <div className="col-span-2 space-y-2">
+              <label className="text-[14px] font-semibold text-[#8c8c8c]">
+                Case Mode <span className="text-[#E96262] ml-0.5">*</span>
+              </label>
+              <div className="flex gap-4">
+                <select
+                  required
+                  value={formData.defaultMode}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      defaultMode: e.target.value as CaseMode,
+                    })
+                  }
+                  className="flex-1 h-11 bg-[#141414] border border-[#242424] rounded-[12px] px-4 text-sm text-[#EAEAEA] focus:outline-none focus:border-[#3E3E3E] transition-colors"
+                >
+                  {Object.values(CaseMode).map((mode) => (
+                    <option key={mode} value={mode}>
+                      {mode}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 

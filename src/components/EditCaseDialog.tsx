@@ -12,7 +12,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useMutation } from '@/lib/hooks';
-import { CaseType, CaseCategory, Currency } from '@/schema';
+import { CaseType, CaseCategory, Currency, CaseMode } from '@/schema';
 import { Box, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -30,10 +30,10 @@ export function EditCaseDialog({
   const [open, setOpen] = useState(false);
   const [formData, setFormData] = useState({
     name: caseData.name,
-    slug: caseData.slug,
     isActive: caseData.isActive,
     image: caseData.image,
     category: caseData.category as CaseCategory,
+    defaultMode: ((caseData as any).defaultMode as CaseMode) || CaseMode.DAILY,
     price: caseData.price,
     isBoost: (caseData as any).isBoost || false,
     boostPrice: (caseData as any).boostPrice || {
@@ -104,18 +104,6 @@ export function EditCaseDialog({
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-xs font-bold text-[#8c8c8c] uppercase tracking-wider">
-                  Slug
-                </label>
-                <input
-                  value={formData.slug}
-                  onChange={(e) =>
-                    setFormData({ ...formData, slug: e.target.value })
-                  }
-                  className="w-full h-11 bg-[#141414] border border-[#242424] rounded-xl px-4 text-sm text-[#EAEAEA] focus:border-[#3E3E3E] outline-none transition-colors font-mono"
-                />
-              </div>
-              <div className="space-y-2">
                 <label className="text-xs font-bold text-[#8c8c8c] uppercase">
                   Category
                 </label>
@@ -176,6 +164,28 @@ export function EditCaseDialog({
                   )}
                 </div>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-[#8c8c8c] uppercase tracking-wider">
+                Case Mode
+              </label>
+              <select
+                value={formData.defaultMode}
+                onChange={(e) =>
+                  setFormData({
+                    ...formData,
+                    defaultMode: e.target.value as CaseMode,
+                  })
+                }
+                className="w-full h-11 bg-[#141414] border border-[#242424] rounded-xl px-4 text-sm text-[#EAEAEA] focus:border-[#3E3E3E] outline-none appearance-none"
+              >
+                {Object.values(CaseMode).map((mode) => (
+                  <option key={mode} value={mode}>
+                    {mode.toUpperCase()}
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div className="flex items-center gap-2 py-2">

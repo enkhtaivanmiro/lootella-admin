@@ -125,6 +125,12 @@ export enum CaseCategory {
   PLAYER = 'player',
 }
 
+export enum CaseMode {
+  DAILY = 'daily',
+  WALLET = 'wallet',
+  CODE = 'code',
+}
+
 export enum Currency {
   MNT = 'mnt',
   USD = 'usd',

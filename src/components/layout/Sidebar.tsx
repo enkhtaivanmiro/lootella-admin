@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import {
   LayoutDashboard,
   Box,
+  Palette,
   Users,
   CreditCard,
   LogOut,
@@ -21,6 +22,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', href: '/' },
   { icon: Box, label: 'Cases', href: '/cases' },
+  { icon: Palette, label: 'Skins', href: '/skins' },
   { icon: Users, label: 'Users', href: '/users' },
   { icon: CreditCard, label: 'Transactions', href: '/transactions' },
   { icon: TrendingUp, label: 'Analytics', href: '/analytics' },

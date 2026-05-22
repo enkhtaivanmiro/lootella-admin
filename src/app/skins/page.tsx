@@ -10,8 +10,8 @@ import {
 } from 'lucide-react';
 import { Breadcrumb } from '@/components/layout/Breadcrumb';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
-import { useListQuery } from '@/lib/hooks';
+import { useState, useRef } from 'react';
+import { useListQuery, useDebounce } from '@/lib/hooks';
 import { SkinItemType } from '@/schema';
 
 const RARITY_COLORS: Record<string, string> = {
@@ -33,6 +33,7 @@ const RARITY_COLORS: Record<string, string> = {
 
 export default function SkinsPage() {
   const [q, setQ] = useState('');
+  const isFirstRender = useRef(true);
   
   const { data, loading, fetchData, current, totalPages, total } =
     useListQuery<SkinItemType>({
@@ -41,9 +42,20 @@ export default function SkinsPage() {
       params: { page: 1, limit: 20 },
     });
 
+  useDebounce(
+    (val) => {
+      if (isFirstRender.current) {
+        isFirstRender.current = false;
+        return;
+      }
+      fetchData({ name: val, page: 1 });
+    },
+    500,
+    q,
+  );
+
   const handleSearch = (val: string) => {
     setQ(val);
-    fetchData({ name: val, page: 1 });
   };
 
   const getSkinRarity = (skin: any) => {

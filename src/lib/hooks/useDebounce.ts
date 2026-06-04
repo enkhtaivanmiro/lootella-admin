@@ -1,16 +1,22 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export const useDebounce = <T>(
   fn: (val: T) => void,
   delay: number,
   value: T,
 ) => {
+  const fnRef = useRef(fn);
+  
+  useEffect(() => {
+    fnRef.current = fn;
+  }, [fn]);
+
   useEffect(() => {
     const timeout = setTimeout(() => {
-      fn(value);
+      fnRef.current(value);
     }, delay);
     return () => {
       clearTimeout(timeout);
     };
-  }, [value]);
+  }, [value, delay]);
 };

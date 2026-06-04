@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { AxiosResponse } from 'axios';
 
-import axios from '@/lib/axios';
+import axios from '@/lib/api';
 import { ErrorType } from '@/schema';
 import { toast } from 'sonner';
 
@@ -17,7 +17,7 @@ export interface UseMutationValue {
   request: (
     data: any,
     requestUri?: string,
-  ) => Promise<AxiosResponse<string, any>>;
+  ) => Promise<any>;
 }
 
 export const useMutation = ({
@@ -29,7 +29,7 @@ export const useMutation = ({
   const request = (
     data: any,
     requestUri?: string,
-  ): Promise<AxiosResponse<any, any>> => {
+  ): Promise<any> => {
     setLoading(true);
     return axios
       .request({
@@ -39,12 +39,12 @@ export const useMutation = ({
       })
       .then((res: any) => {
         setLoading(false);
-
         return res;
       })
       .catch((e) => {
         setError(e);
         setLoading(false);
+        console.error('Mutation Error:', e);
         toast.warning(e.message || 'Something went wrong.');
         return Promise.reject(e);
       });
